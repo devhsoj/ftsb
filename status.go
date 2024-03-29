@@ -10,7 +10,7 @@ import (
 
 const (
 	TrailStatusUrl string = "https://fredtrails.org/trail-status/"
-	UserAgent      string = "ftsb-client-v1.0"
+	UserAgent      string = "ftsb-client"
 )
 
 func GetTrailStatusSummary() (string, error) {
