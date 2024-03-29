@@ -1,0 +1,11 @@
+# ide / editor stuff
+.idea/
+.vscode/
+
+# build stuff
+build/
+fts
+fts.exe
+
+# env stuff
+.env
