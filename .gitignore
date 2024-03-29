@@ -4,8 +4,8 @@
 
 # build stuff
 build/
-fts
-fts.exe
+ftsb
+ftsb.exe
 
 # env stuff
 .env
