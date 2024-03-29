@@ -12,7 +12,9 @@ import (
 
 func main() {
 	if err := godotenv.Load(); err != nil {
-		log.Printf("failed to load from .env: %s", err)
+		if os.Getenv("DOCKER") != "true" {
+			log.Printf("failed to load from .env: %s", err)
+		}
 	}
 
 	discordBotToken := os.Getenv("DISCORD_BOT_TOKEN")
@@ -28,7 +30,7 @@ func main() {
 			log.Fatalf("failed to properly close Discord session: %s", err)
 		}
 
-		log.Printf("stopped bot @ %s", time.Now().Format("Mon Jan 2 15:04:05 MST 2006"))
+		log.Println("[+] stopped ftsb bot")
 	}()
 
 	if err != nil {
@@ -44,7 +46,7 @@ func main() {
 		log.Fatalf("failed to open Discord session: %s", err)
 	}
 
-	log.Printf("started bot @ %s", time.Now().Format("Mon Jan 2 15:04:05 MST 2006"))
+	log.Println("[+] started ftsb bot")
 
 	go func() {
 		for {
