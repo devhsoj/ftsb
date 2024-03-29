@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"log"
 	"net/http"
@@ -39,7 +40,7 @@ func GetTrailStatusSummary() (string, error) {
 		return "", err
 	}
 
-	var summary string
+	summary := fmt.Sprintf("# Fredericksburg Trail Status\n[View Website](<%s>)\n```ansi\n", TrailStatusUrl)
 
 	headers := doc.Find("h1, h3, h5")
 
@@ -79,5 +80,9 @@ func GetTrailStatusSummary() (string, error) {
 		summary += selection.Text() + "\n"
 	})
 
-	return summary, nil
+	summary = strings.ReplaceAll(summary, "Red", "\u001B[2;31mRed\u001B[0;31m\u001B[0m\u001B[2;31m\u001B[0m")
+	summary = strings.ReplaceAll(summary, "Amber", "\u001B[2;33mAmber\u001B[0;33m\u001B[0m\u001B[2;33m\u001B[0m")
+	summary = strings.ReplaceAll(summary, "Green", "\u001B[2;32mGreen\u001B[0;32m\u001B[0m\u001B[2;32m\u001B[0m")
+
+	return summary + "\n```", nil
 }

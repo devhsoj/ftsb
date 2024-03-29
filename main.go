@@ -36,13 +36,43 @@ func main() {
 	}
 
 	dg.AddHandler(MessageCreate)
-	dg.Identify.Intents = discordgo.IntentGuildMessages
+
+	dg.Identify.Intents |= discordgo.IntentGuilds
+	dg.Identify.Intents |= discordgo.IntentGuildMessages
 
 	if err = dg.Open(); err != nil {
 		log.Fatalf("failed to open Discord session: %s", err)
 	}
 
 	log.Printf("started bot @ %s", time.Now().Format("Mon Jan 2 15:04:05 MST 2006"))
+
+	go func() {
+		for {
+			time.Sleep(time.Hour)
+
+			dg.State.Lock()
+
+			for _, guild := range dg.State.Guilds {
+				for _, channel := range guild.Channels {
+					if channel.Type == discordgo.ChannelTypeGuildText && channel.Name == "status" {
+						summary, err := GetTrailStatusSummary()
+
+						if err != nil {
+							log.Printf("failed to get trail status summary: %s", err)
+						}
+
+						if _, err = dg.ChannelMessageSend(channel.ID, summary); err != nil {
+							log.Printf("failed to send trail status summary to channel '%s': %s", channel.ID, err)
+						}
+
+						log.Printf("sent updated summary to %s:%s", guild.Name, channel.Name)
+					}
+				}
+			}
+
+			dg.State.Unlock()
+		}
+	}()
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)

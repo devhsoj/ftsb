@@ -6,6 +6,8 @@ import (
 )
 
 func MessageCreate(sess *discordgo.Session, msg *discordgo.MessageCreate) {
+	sess.State.Lock()
+
 	if msg.Author.ID == sess.State.User.ID {
 		return
 	}
@@ -23,4 +25,6 @@ func MessageCreate(sess *discordgo.Session, msg *discordgo.MessageCreate) {
 			return
 		}
 	}
+
+	sess.State.Unlock()
 }
