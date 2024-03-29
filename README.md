@@ -39,7 +39,7 @@ then
 ---
 
 ### ftsb commands
-**Note:** ftsb will automatically send the trail status summary every 4 hours by default.
+**Note:** ftsb will automatically send the trail status summary every hour by default.
 
 ---
 
