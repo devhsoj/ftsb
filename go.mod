@@ -1,4 +1,4 @@
-module fts
+module ftsb
 
 go 1.21
 
