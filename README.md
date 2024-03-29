@@ -11,7 +11,7 @@ docker build . -t ftsb
 ```
 Running:
 ```shell
-docker run -d -e DISCORD_BOT_TOKEN='xxxx' ftsb
+docker run --name ftsb -d -e DISCORD_BOT_TOKEN='xxxx' ftsb
 ```
 
 ---
