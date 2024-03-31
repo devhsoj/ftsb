@@ -48,31 +48,48 @@ func main() {
 
 	log.Println("[+] started ftsb bot")
 
+	// uWu
+	readyChan := make(chan bool, 1)
+
+	dg.AddHandler(func(s *discordgo.Session, m *discordgo.Event) {
+		// wait for guilds to be ready
+		if m.Type == "GUILD_CREATE" {
+			readyChan <- true
+		}
+	})
+
+	<-readyChan
+
+	// list of channelIds for automated trail status update messages
+	var channelIds []string
+
+	for _, guild := range dg.State.Ready.Guilds {
+		for _, channel := range guild.Channels {
+			if channel.Type == discordgo.ChannelTypeGuildText && channel.Name == "status" {
+				channelIds = append(channelIds, channel.ID)
+			}
+		}
+	}
+
+	log.Printf("[i] %d channel(s) ready", len(channelIds))
+
 	go func() {
 		for {
 			time.Sleep(time.Hour)
 
-			dg.State.Lock()
+			for _, channelId := range channelIds {
+				summary, err := GetTrailStatusSummary()
 
-			for _, guild := range dg.State.Guilds {
-				for _, channel := range guild.Channels {
-					if channel.Type == discordgo.ChannelTypeGuildText && channel.Name == "status" {
-						summary, err := GetTrailStatusSummary()
-
-						if err != nil {
-							log.Printf("failed to get trail status summary: %s", err)
-						}
-
-						if _, err = dg.ChannelMessageSend(channel.ID, summary); err != nil {
-							log.Printf("failed to send trail status summary to channel '%s': %s", channel.ID, err)
-						}
-
-						log.Printf("sent updated summary to %s:%s", guild.Name, channel.Name)
-					}
+				if err != nil {
+					log.Printf("failed to get trail status summary: %s", err)
 				}
-			}
 
-			dg.State.Unlock()
+				if _, err = dg.ChannelMessageSend(channelId, summary); err != nil {
+					log.Printf("failed to send trail status summary to channel '%s': %s", channelId, err)
+				}
+
+				log.Printf("sent updated summary to %s", channelId)
+			}
 		}
 	}()
 
